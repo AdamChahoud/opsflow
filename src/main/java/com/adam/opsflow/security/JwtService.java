@@ -16,6 +16,13 @@ public class JwtService {
 
     private static final long EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24h
 
+    private Claims validateAndGetClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
     public String generateToken(UUID userId, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_MS);
@@ -29,19 +36,21 @@ public class JwtService {
                 .compact();
     }
 
-    public Claims validateAndGetClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+
+    public UUID getUserId(String token) {
+        return UUID.fromString(validateAndGetClaims(token).getSubject());
     }
 
-    public UUID getUserId(Claims claims) {
-        return UUID.fromString(claims.getSubject());
+    public String getRole(String token) {
+        return validateAndGetClaims(token).get("role", String.class);
     }
 
-    public String getRole(Claims claims) {
-        return claims.get("role", String.class);
+    public boolean isTokenValid(String token){
+        try {
+            validateAndGetClaims(token);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 }
