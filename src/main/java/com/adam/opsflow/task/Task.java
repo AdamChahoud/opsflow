@@ -45,4 +45,18 @@ public class Task {
         this.updatedAt = this.createdAt;
     }
 
+    public void assignTo(UUID userId){
+        this.assignedTo = userId;
+        this.updatedAt = Instant.now();
+    }
+
+    public void updateStatus(TaskStatus status){
+        this.status = status;
+        this.updatedAt = Instant.now();
+    }
+
+    public UUID getAssignedTo(){
+        return assignedTo;
+    }
+
 }
