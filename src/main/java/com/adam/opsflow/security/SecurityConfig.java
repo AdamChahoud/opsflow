@@ -2,6 +2,7 @@ package com.adam.opsflow.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,8 +19,8 @@ public class SecurityConfig {
             JwtService jwtService) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
+            .logout(AbstractHttpConfigurer::disable)
             .sessionManagement(sm ->
                     sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
@@ -30,6 +31,13 @@ public class SecurityConfig {
             .addFilterBefore(
                     new JwtAuthenticationFilter(jwtService),
                     UsernamePasswordAuthenticationFilter.class
+            )
+            .exceptionHandling(ex ->
+                 ex.authenticationEntryPoint(
+                    new org.springframework.security.web.authentication.HttpStatusEntryPoint(
+                            HttpStatus.UNAUTHORIZED
+                    )
+                )
             );
         return http.build();
     }
