@@ -7,6 +7,7 @@ import com.adam.opsflow.task.dto.UpdateStatusRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -66,5 +67,28 @@ public class TaskController {
                 role
         );
         return TaskResponse.from(task);
+    }
+
+    @GetMapping("/{id}")
+    public TaskResponse getTask(
+            @PathVariable UUID id,
+            Authentication auth
+    ){
+        UUID userId = (UUID) auth.getPrincipal();
+        String role = auth.getAuthorities().iterator()
+                .next().getAuthority().replace("ROLE_", "");
+
+        Task task = taskService.getTask(id, userId, role);
+        return TaskResponse.from(task);
+    }
+
+    @GetMapping
+    public List<TaskResponse> getTasks(Authentication auth){
+        UUID userId = (UUID) auth.getPrincipal();
+        String role = auth.getAuthorities().iterator()
+                .next().getAuthority().replace("ROLE_", "");
+
+        return taskService.getAllTasks(userId, role).stream()
+                .map(TaskResponse::from).toList();
     }
 }

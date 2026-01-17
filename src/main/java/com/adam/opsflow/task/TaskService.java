@@ -3,6 +3,7 @@ package com.adam.opsflow.task;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -48,6 +49,31 @@ public class TaskService {
 
         task.updateStatus(newStatus);
         return taskRepository.save(task);
+    }
+
+    public Task getTask(UUID taskId, UUID userId, String role){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+
+        boolean isAdmin = role.equals("ADMIN");
+        boolean isCreator = userId.equals(task.getCreatedBy());
+        boolean isAssignee = userId.equals(task.getAssignedTo());
+
+        if (!isAdmin && !isAssignee && !isCreator){
+            throw new AccessDeniedException("Not allowed to view this task");
+        }
+        return task;
+    }
+
+    public List<Task> getAllTasks(UUID userId, String role){
+        if (role.equals("ADMIN")){
+            return taskRepository.findAll();
+        }
+
+        return taskRepository.findAll().stream().filter(
+                task -> task.getCreatedBy().equals(userId)
+                || task.getAssignedTo().equals(userId)
+        ).toList();
     }
 
 }
