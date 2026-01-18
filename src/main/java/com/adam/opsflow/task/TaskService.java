@@ -71,9 +71,34 @@ public class TaskService {
         }
 
         return taskRepository.findAll().stream().filter(
-                task -> task.getCreatedBy().equals(userId)
-                || task.getAssignedTo().equals(userId)
+                task -> userId.equals(task.getCreatedBy())
+                || userId.equals(task.getAssignedTo())
         ).toList();
+    }
+
+    public Comment addComment(
+            UUID taskId,
+            UUID authorId,
+            String role,
+            String content
+    ){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+
+        boolean isAdmin = role.equals("ADMIN");
+        boolean isCreator = authorId.equals(task.getCreatedBy());
+        boolean isAssignee = authorId.equals(task.getAssignedTo());
+
+        if(!isAdmin && !isCreator && !isAssignee){
+            throw new AccessDeniedException("Not allowed to comment on this task");
+        }
+
+        Comment comment = new Comment(taskId, authorId, content);
+        return commentRepository.save(comment);
+    }
+
+    public List<Comment> getComments(UUID taskId){
+        return commentRepository.findByTaskId(taskId);
     }
 
 }

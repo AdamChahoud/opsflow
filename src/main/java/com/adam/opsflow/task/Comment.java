@@ -36,4 +36,23 @@ public class Comment {
         this.createdAt = Instant.now();
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getTaskId() {
+        return taskId;
+    }
+
+    public UUID getAuthorId() {
+        return authorId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

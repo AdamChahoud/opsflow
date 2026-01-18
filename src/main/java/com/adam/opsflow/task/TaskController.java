@@ -1,9 +1,6 @@
 package com.adam.opsflow.task;
 
-import com.adam.opsflow.task.dto.AssignTaskRequest;
-import com.adam.opsflow.task.dto.CreateTaskRequest;
-import com.adam.opsflow.task.dto.TaskResponse;
-import com.adam.opsflow.task.dto.UpdateStatusRequest;
+import com.adam.opsflow.task.dto.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,5 +87,30 @@ public class TaskController {
 
         return taskService.getAllTasks(userId, role).stream()
                 .map(TaskResponse::from).toList();
+    }
+
+    @PostMapping("/{id}/comments")
+    public CommentResponse addComment(
+            @PathVariable UUID id,
+            @RequestBody CreateCommentRequest request,
+            Authentication auth
+    ){
+        UUID userId = (UUID) auth.getPrincipal();
+        String role = auth.getAuthorities().iterator()
+                .next().getAuthority().replace("ROLE_", "");
+
+        Comment comment = taskService.addComment(
+                id,
+                userId,
+                role,
+                request.content()
+        );
+        return CommentResponse.from(comment);
+    }
+
+    @GetMapping("/{id}/comments")
+    public List<CommentResponse> getComments(@PathVariable UUID id){
+        return taskService.getComments(id).stream()
+                .map(CommentResponse::from).toList();
     }
 }
