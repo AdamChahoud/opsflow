@@ -1,30 +1,43 @@
 package com.adam.opsflow.task;
 
+import com.adam.opsflow.audit.AuditLogService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
     private final CommentRepository commentRepository;
+    private final AuditLogService auditLogService;
 
     public TaskService(
             TaskRepository taskRepository,
-            CommentRepository commentRepository
+            CommentRepository commentRepository,
+            AuditLogService auditLogService
     ){
         this.taskRepository = taskRepository;
         this.commentRepository = commentRepository;
+        this.auditLogService = auditLogService;
     }
 
     public Task createTask(String title, String description, UUID creatorId){
         Task task = new Task(title, description, creatorId);
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        auditLogService.logEvent(
+                "TASK",
+                savedTask.getId(),
+                "TASK_CREATED",
+                creatorId,
+                Map.of("title", savedTask.getTitle())
+        );
+        return savedTask;
     }
 
-    public Task assignTask(UUID taskId, UUID assigneeId, String role){
+    public Task assignTask(UUID taskId, UUID assigneeId, UUID performedBy, String role){
         if (!role.equals("MANAGER") && !role.equals("ADMIN")){
             throw new AccessDeniedException("Only managers or admins can assign tasks");
         }
@@ -33,7 +46,15 @@ public class TaskService {
                 .orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
         task.assignTo(assigneeId);
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        auditLogService.logEvent(
+                "TASK",
+                savedTask.getId(),
+                "TASK_ASSIGNED",
+                performedBy,
+                Map.of("assignedTo", assigneeId.toString())
+        );
+        return savedTask;
     }
 
     public Task updateStatus(UUID taskId, TaskStatus newStatus, UUID userId, String role){
@@ -47,8 +68,20 @@ public class TaskService {
             throw new AccessDeniedException("Not allowed to update task status");
         }
 
+        TaskStatus oldStatus = task.getStatus();
         task.updateStatus(newStatus);
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        auditLogService.logEvent(
+                "TASK",
+                savedTask.getId(),
+                "TASK_STATUS_CHANGED",
+                userId,
+                Map.of(
+                        "from", oldStatus.name(),
+                        "to", newStatus.name()
+                )
+        );
+        return savedTask;
     }
 
     public Task getTask(UUID taskId, UUID userId, String role){
@@ -94,7 +127,15 @@ public class TaskService {
         }
 
         Comment comment = new Comment(taskId, authorId, content);
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        auditLogService.logEvent(
+                "COMMENT",
+                savedComment.getId(),
+                "COMMENT_ADDED",
+                authorId,
+                Map.of("taskId", taskId.toString())
+        );
+        return savedComment;
     }
 
     public List<Comment> getComments(UUID taskId){

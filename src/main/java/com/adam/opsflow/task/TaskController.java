@@ -36,12 +36,14 @@ public class TaskController {
             @RequestBody AssignTaskRequest request,
             Authentication auth
             ){
+        UUID performedBy = (UUID) auth.getPrincipal();
         String role = auth.getAuthorities().iterator()
                 .next().getAuthority().replace("ROLE_", "");
 
         Task task = taskService.assignTask(
                 id,
                 request.assigneeId(),
+                performedBy,
                 role
         );
         return TaskResponse.from(task);
