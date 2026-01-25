@@ -1,6 +1,8 @@
 package com.adam.opsflow.task;
 
 import com.adam.opsflow.audit.AuditLogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final CommentRepository commentRepository;
     private final AuditLogService auditLogService;
+    private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
     public TaskService(
             TaskRepository taskRepository,
@@ -34,6 +37,8 @@ public class TaskService {
                 creatorId,
                 Map.of("title", savedTask.getTitle())
         );
+        log.info("Task created: taskId={}, createdBy={}",
+                savedTask.getId(), creatorId);
         return savedTask;
     }
 
@@ -54,6 +59,8 @@ public class TaskService {
                 performedBy,
                 Map.of("assignedTo", assigneeId.toString())
         );
+        log.info("Task assigned: taskId={}, assignedTo={}, performedBy={}",
+                savedTask.getId(), assigneeId, performedBy);
         return savedTask;
     }
 
@@ -81,6 +88,8 @@ public class TaskService {
                         "to", newStatus.name()
                 )
         );
+        log.info("Task status changed: taskId={}, from={}, to={}, performedBy={}",
+                savedTask.getId(), oldStatus, newStatus, userId);
         return savedTask;
     }
 
@@ -135,6 +144,8 @@ public class TaskService {
                 authorId,
                 Map.of("taskId", taskId.toString())
         );
+        log.info("Comment added: commentId={}, taskId={}, authorId={}",
+                savedComment.getId(), taskId, authorId);
         return savedComment;
     }
 
