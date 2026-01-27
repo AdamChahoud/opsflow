@@ -20,4 +20,8 @@ public class AnalyticsController {
     public Map<String, Long> taskByStatus() {
         return analyticsService.getTaskCountByStatus();
     }
+    @GetMapping("/all-tasks")
+    public long taskNumber(){
+        return analyticsService.getAllTasks();
+    }
 }
