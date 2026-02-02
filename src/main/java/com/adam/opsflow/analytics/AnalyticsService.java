@@ -1,5 +1,6 @@
 package com.adam.opsflow.analytics;
 
+import com.adam.opsflow.task.TaskStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -11,7 +12,7 @@ public class AnalyticsService {
     public AnalyticsService(TaskAnalyticsRepository analyticsRepository){
         this.analyticsRepository = analyticsRepository;
     }
-    public Map<String, Long> getTaskCountByStatus(){
+    public Map<TaskStatus, Long> getTaskCountByStatus(){
         return analyticsRepository.countTasksByStatus();
     }
     public long getAllTasks(){

@@ -1,5 +1,6 @@
 package com.adam.opsflow.analytics;
 
+import com.adam.opsflow.task.TaskStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ public class TaskAnalyticsRepositoryImpl implements TaskAnalyticsRepository{
     }
 
     @Override
-    public Map<String, Long> countTasksByStatus() {
+    public Map<TaskStatus, Long> countTasksByStatus() {
         List<Object[]> results = em.createQuery("""
                 SELECT t.status, COUNT(t)
                 FROM Task t
@@ -29,7 +30,7 @@ public class TaskAnalyticsRepositoryImpl implements TaskAnalyticsRepository{
 
         return results.stream()
                 .collect(Collectors.toMap(
-                        row -> row[0].toString(),
+                        row -> (TaskStatus) row[0],
                         row -> (Long) row[1]
                 ));
 

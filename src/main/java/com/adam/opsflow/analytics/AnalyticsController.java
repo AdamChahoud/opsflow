@@ -1,5 +1,6 @@
 package com.adam.opsflow.analytics;
 
+import com.adam.opsflow.task.TaskStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/tasks-by-status")
-    public Map<String, Long> taskByStatus() {
+    public Map<TaskStatus, Long> taskByStatus() {
         return analyticsService.getTaskCountByStatus();
     }
     @GetMapping("/all-tasks")
