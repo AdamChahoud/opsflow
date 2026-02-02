@@ -24,4 +24,8 @@ public class AnalyticsController {
     public long taskNumber(){
         return analyticsService.getAllTasks();
     }
+    @GetMapping("/avg-completion-time")
+    public Double averageCompletionTime(){
+        return analyticsService.getAverageCompletionTime();
+    }
 }

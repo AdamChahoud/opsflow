@@ -34,4 +34,12 @@ public class TaskAnalyticsRepositoryImpl implements TaskAnalyticsRepository{
                 ));
 
     }
+    @Override
+    public Double averageCompletionTime(){
+        return (Double) em.createNativeQuery("""
+                SELECT AVG(EXTRACT(EPOCH FROM (updated_at - created_at)))
+                FROM tasks
+                Where status = 'DONE'
+                """).getSingleResult();
+    }
 }

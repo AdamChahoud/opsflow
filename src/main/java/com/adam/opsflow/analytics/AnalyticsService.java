@@ -17,4 +17,7 @@ public class AnalyticsService {
     public long getAllTasks(){
         return analyticsRepository.countAllTasks();
     }
+    public Double getAverageCompletionTime(){
+        return analyticsRepository.averageCompletionTime();
+    }
 }
