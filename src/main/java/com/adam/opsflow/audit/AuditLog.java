@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class AuditLog {
     @Column(name = "performed_by")
     private UUID performedBy;
     @Column(columnDefinition = "jsonb")
+    @org.hibernate.annotations.JdbcTypeCode(SqlTypes.JSON)
     private String metadata;
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -44,4 +46,11 @@ public class AuditLog {
         this.createdAt = Instant.now();
     }
 
+    public String getAction() {
+        return action;
+    }
+
+    public UUID getPerformedBy() {
+        return performedBy;
+    }
 }
