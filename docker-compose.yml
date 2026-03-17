@@ -11,6 +11,12 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  mongo:
+    image: mongo:7
+    container_name: opsflow-mongo
+    ports:
+      - "27017:27017"
+
   api:
     build: .
     container_name: opsflow-api

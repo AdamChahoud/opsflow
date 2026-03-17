@@ -7,6 +7,10 @@ spring:
     username: opsflow
     password: opsflow
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/opsflow
+
   jpa:
     hibernate:
       ddl-auto: validate
