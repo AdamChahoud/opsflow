@@ -1,4 +1,4 @@
-package com.adam.opsflow.analytics;
+package com.adam.opsflow.analytics.sql;
 
 import com.adam.opsflow.task.TaskStatus;
 

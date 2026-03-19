@@ -1,5 +1,6 @@
-package com.adam.opsflow.analytics;
+package com.adam.opsflow.analytics.sql;
 
+import com.adam.opsflow.analytics.sql.TaskAnalyticsRepository;
 import com.adam.opsflow.task.TaskStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class TaskAnalyticsRepositoryImpl implements TaskAnalyticsRepository{
+public class TaskAnalyticsRepositoryImpl implements TaskAnalyticsRepository {
     @PersistenceContext
     private EntityManager em;
     @Override

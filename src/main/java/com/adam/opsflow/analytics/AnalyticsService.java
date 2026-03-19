@@ -1,5 +1,6 @@
 package com.adam.opsflow.analytics;
 
+import com.adam.opsflow.analytics.sql.TaskAnalyticsRepository;
 import com.adam.opsflow.task.TaskStatus;
 import org.springframework.stereotype.Service;
 
