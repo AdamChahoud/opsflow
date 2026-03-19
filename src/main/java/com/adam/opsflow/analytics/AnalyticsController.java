@@ -37,4 +37,8 @@ public class AnalyticsController {
     public Map<String, Long> auditActions(){
         return auditAnalyticsService.countAuditActions();
     }
+    @GetMapping("/audit-actions-per-day")
+    public Map<String, Long> auditActionsPerDay(){
+        return auditAnalyticsService.countAuditActionsPerDay();
+    }
 }

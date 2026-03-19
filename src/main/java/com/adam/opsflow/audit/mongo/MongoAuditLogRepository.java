@@ -13,4 +13,13 @@ public interface MongoAuditLogRepository
     })
     List<ActionCount> countByAction();
 
+    @Aggregation(pipeline = {
+            "{ $match: { createdAt: { $ne: null } } }",
+            "{ $group: { " +
+            "_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, " +
+            "count: { $sum: 1 } } }",
+            "{ $sort: { _id: 1 } }"
+
+    })
+    List<ActionCount> countActionPerDay();
 }

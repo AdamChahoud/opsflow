@@ -22,4 +22,13 @@ public class AuditAnalyticsService {
                         ActionCount::getCount)
         );
     }
+
+    @Transactional(readOnly = true)
+    public Map<String, Long> countAuditActionsPerDay() {
+        return repository.countActionPerDay().stream()
+                .collect(Collectors.toMap(
+                        ActionCount::getAction,
+                        ActionCount::getCount
+                ));
+    }
 }
