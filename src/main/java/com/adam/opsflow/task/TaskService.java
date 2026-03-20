@@ -67,6 +67,9 @@ public class TaskService {
         );
         log.info("Task assigned: taskId={}, assignedTo={}, performedBy={}",
                 savedTask.getId(), assigneeId, performedBy);
+        if (!assigneeId.equals(performedBy)){
+            notificationService.createNotification(assigneeId,
+                "You have been assigned a task:" + savedTask.getTitle());}
         return savedTask;
     }
 
