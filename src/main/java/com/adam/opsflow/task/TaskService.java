@@ -1,6 +1,7 @@
 package com.adam.opsflow.task;
 
 import com.adam.opsflow.audit.AuditLogService;
+import com.adam.opsflow.notifications.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,16 +16,19 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final CommentRepository commentRepository;
     private final AuditLogService auditLogService;
+    private final NotificationService notificationService;
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
     public TaskService(
             TaskRepository taskRepository,
             CommentRepository commentRepository,
-            AuditLogService auditLogService
+            AuditLogService auditLogService,
+            NotificationService notificationService
     ){
         this.taskRepository = taskRepository;
         this.commentRepository = commentRepository;
         this.auditLogService = auditLogService;
+        this.notificationService = notificationService;
     }
 
     public Task createTask(String title, String description, UUID creatorId){
@@ -39,6 +43,8 @@ public class TaskService {
         );
         log.info("Task created: taskId={}, createdBy={}",
                 savedTask.getId(), creatorId);
+        notificationService.createNotification(creatorId,
+                "Task created: " + savedTask.getTitle());
         return savedTask;
     }
 
