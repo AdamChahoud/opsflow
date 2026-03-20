@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,8 +36,8 @@ class AnalyticsControllerTest {
     @WithMockUser(roles = "ADMIN")
     void returnsTaskStats_forAdmin() throws Exception {
         UUID creatorId = UUID.randomUUID();
-        Task openTask = new Task("Open task", "Still in progress", creatorId);
-        Task doneTask = new Task("Done task", "Completed", creatorId);
+        Task openTask = new Task("Open task", "Still in progress", creatorId, Instant.now().plusSeconds(3600));
+        Task doneTask = new Task("Done task", "Completed", creatorId, Instant.now().plusSeconds(3600));
         doneTask.updateStatus(TaskStatus.DONE);
 
         taskRepository.save(openTask);

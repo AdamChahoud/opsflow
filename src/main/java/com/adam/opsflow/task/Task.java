@@ -33,9 +33,12 @@ public class Task {
     @Column(name = "updated_at", nullable = false)
     private  Instant updatedAt;
 
+    @Column(name = "due_at")
+    private Instant dueAt;
+
     protected Task() {}
 
-    public Task(String title, String description, UUID createdBy){
+    public Task(String title, String description, UUID createdBy, Instant dueAt){
         this.id = UUID.randomUUID();
         this.title = title;
         this.description = description;
@@ -43,6 +46,7 @@ public class Task {
         this.createdBy = createdBy;
         this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
+        this.dueAt = dueAt;
     }
 
     public void assignTo(UUID userId){
@@ -85,5 +89,9 @@ public class Task {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Instant getDueAt() {
+        return dueAt;
     }
 }

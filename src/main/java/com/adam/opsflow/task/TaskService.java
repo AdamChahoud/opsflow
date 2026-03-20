@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class TaskService {
     }
 
     public Task createTask(String title, String description, UUID creatorId){
-        Task task = new Task(title, description, creatorId);
+        Task task = new Task(title, description, creatorId, Instant.now().plusSeconds(3600));
         Task savedTask = taskRepository.save(task);
         auditLogService.logEvent(
                 "TASK",
