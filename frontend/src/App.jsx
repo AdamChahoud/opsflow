@@ -62,6 +62,28 @@ function App() {
       }
   };
 
+  const updateStatus = async (taskId, newStatus) => {
+      try {
+          const res = await fetch(`http://localhost:8080/tasks/${taskId}/status`, {
+              method: "PUT",
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ status: newStatus }),
+          });
+          if (!res.ok) {
+              throw new Error("Failed to update status");
+          }
+          const updatedTask = await res.json();
+          setTasks((prev) =>
+              prev.map((t) => (t.id === taskId ? updatedTask : t))
+          );
+      } catch (err) {
+          setError(err.message);
+      }
+  };
+
   return (
       <div>
         <h1>Tasks</h1>
@@ -70,9 +92,9 @@ function App() {
             <h2>Create Task</h2>
 
             <input
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
             />
 
             <input
@@ -84,14 +106,25 @@ function App() {
             <button onClick={createTask}>Create</button>
         </div>
 
-          {loading && <p>Loading...</p>}
-          {error && <p>Error: {error}</p>}
-          {!loading && tasks.length === 0 && <p>No tasks found</p>}
+        {loading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
+        {!loading && tasks.length === 0 && <p>No tasks found</p>}
 
         <ul>
           {tasks.map((task) => (
               <li key={task.id}>
-                {task.title} - {task.status}
+                  {task.title} - {task.status}
+                  <button onClick={() => updateStatus(task.id, "OPEN")}>
+                      OPEN
+                  </button>
+
+                  <button onClick={() => updateStatus(task.id, "IN_PROGRESS")}>
+                      IN PROGRESS
+                  </button>
+
+                  <button onClick={() => updateStatus(task.id, "DONE")}>
+                      DONE
+                  </button>
               </li>
           ))}
         </ul>
