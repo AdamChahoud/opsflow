@@ -1,18 +1,28 @@
 import {useEffect, useState} from "react";
+import Login from "./Login.jsx";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   useEffect(() => {
+    if (!token) return;
+    setLoading(true);
+
     fetch("http://localhost:8080/tasks", {
       headers: {
-        Authorization: "Bearer TOKEN"
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
-        .then(res => res.json())
-        .then(data => {
+        .then(async (res) => {
+            if (!res.ok) {
+                throw new Error("Failed to fetch tasks");
+            }
+            return res.json();
+        })
+        .then((data) => {
             setTasks(data);
             setLoading(false);
         })
@@ -20,7 +30,11 @@ function App() {
             setError(err.message);
             setLoading(false);
         });
-  }, []);
+  }, [token]);
+
+  if (!token) {
+      return <Login onLogin={setToken} />;
+  }
 
   return (
       <div>
@@ -35,6 +49,14 @@ function App() {
               </li>
           ))}
         </ul>
+        <button
+            onClick={() => {
+                localStorage.removeItem("token");
+                setToken(null);
+            }}
+        >
+            Logout
+        </button>
       </div>
   );
 }
