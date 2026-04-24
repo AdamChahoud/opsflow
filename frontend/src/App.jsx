@@ -9,6 +9,7 @@ function App() {
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [assigneeIds, setAssigneeIds] = useState({});
 
   const fetchTasks = async () => {
     const res = await fetch("http://localhost:8080/tasks", {
@@ -50,6 +51,16 @@ function App() {
         setError(err.message);
         setLoading(false);
       });
+
+    const intervalId = setInterval(() => {
+      fetchNotifications()
+        .then((data) => {
+          setNotifications(data);
+          setError("");
+        })
+        .catch((err) => setError(err.message));
+    }, 5000);
+    return () => clearInterval(intervalId);
   }, [token]);
 
 
@@ -126,6 +137,39 @@ function App() {
     }
   };
 
+  const assignTask = async (taskId) => {
+    try {
+      setError("");
+      const assigneeId = assigneeIds[taskId];
+      if (!assigneeId) {
+        throw new Error("Please enter an assignee UUID");
+      }
+      const res = await fetch(`http://localhost:8080/tasks/${taskId}/assign`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ assigneeId }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to assign task");
+      }
+
+      const updatedTask = await res.json();
+
+      setTasks((prev) => prev.map((t) =>
+        (t.id === taskId ? updatedTask : t)));
+
+      const notificationData = await fetchNotifications();
+      setNotifications(notificationData);
+
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
 
   if (!token) {
     return <Login onLogin={setToken} />;
@@ -175,15 +219,26 @@ function App() {
               <strong>{task.title}</strong> - {task.status}
 
               <div>
-                <button onClick={() => updateStatus(task.id, "OPEN")}>
-                  OPEN
-                </button>
-                <button onClick={() => updateStatus(task.id, "IN_PROGRESS")}>
-                  IN PROGRESS
-                </button>
-                <button onClick={() => updateStatus(task.id, "DONE")}>
-                  DONE
-                </button>
+                {["OPEN", "IN_PROGRESS", "DONE"]
+                  .filter((s) => s !== task.status)
+                  .map((s) => (
+                    <button key={s} onClick={() => updateStatus(task.id, s)}>
+                      {s.replace("_", " ")}
+                    </button>
+                  ))}
+              </div>
+
+              <div>
+                <input
+                  placeholder="Assignee UUID"
+                  value={assigneeIds[task.id] || ""}
+                  onChange={(e) =>
+                    setAssigneeIds((prev) => ({
+                      ...prev, [task.id]: e.target.value,
+                    }))
+                  }
+                />
+                <button onClick={() => assignTask(task.id)}>Assign</button>
               </div>
             </li>
           ))}
