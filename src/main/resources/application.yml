@@ -3,13 +3,13 @@ spring:
     name: opsflow
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/opsflow
-    username: opsflow
-    password: opsflow
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/opsflow}
+    username: ${SPRING_DATASOURCE_USERNAME:opsflow}
+    password: ${SPRING_DATASOURCE_PASSWORD:opsflow}
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/opsflow
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/opsflow}
 
   jpa:
     hibernate:
@@ -28,3 +28,6 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.springframework.security: DEBUG
+
+app:
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:5173}

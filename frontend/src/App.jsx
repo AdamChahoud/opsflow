@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Login from "./Login.jsx";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [tasks, setTasks] = useState([]);
@@ -12,7 +14,7 @@ function App() {
   const [assigneeIds, setAssigneeIds] = useState({});
 
   const fetchTasks = async () => {
-    const res = await fetch("http://localhost:8080/tasks", {
+    const res = await fetch(`${API_URL}/tasks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -24,7 +26,7 @@ function App() {
   };
 
   const fetchNotifications = async () => {
-    const res = await fetch("http://localhost:8080/notifications", {
+    const res = await fetch(`${API_URL}/notifications`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -68,7 +70,7 @@ function App() {
     try {
       setError("");
 
-      const res = await fetch("http://localhost:8080/tasks", {
+      const res = await fetch(`${API_URL}/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +94,7 @@ function App() {
   const updateStatus = async (taskId, newStatus) => {
     try {
       setError("");
-      const res = await fetch(`http://localhost:8080/tasks/${taskId}/status`, {
+      const res = await fetch(`${API_URL}/tasks/${taskId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +119,7 @@ function App() {
     try {
       setError("");
       const res = await fetch(
-        `http://localhost:8080/notifications/${notificationID}/read`,
+        `${API_URL}/notifications/${notificationID}/read`,
         {
           method: "PUT",
           headers: {
@@ -144,7 +146,7 @@ function App() {
       if (!assigneeId) {
         throw new Error("Please enter an assignee UUID");
       }
-      const res = await fetch(`http://localhost:8080/tasks/${taskId}/assign`, {
+      const res = await fetch(`${API_URL}/tasks/${taskId}/assign`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
