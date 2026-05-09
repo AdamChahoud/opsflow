@@ -1,8 +1,10 @@
 package com.adam.opsflow.analytics;
 
+import com.adam.opsflow.task.CommentRepository;
 import com.adam.opsflow.task.Task;
 import com.adam.opsflow.task.TaskRepository;
 import com.adam.opsflow.task.TaskStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +33,15 @@ class AnalyticsControllerTest {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @BeforeEach
+    void cleanDataBase() {
+        commentRepository.deleteAll();
+        taskRepository.deleteAll();
+    }
 
     @Test
     @WithMockUser(roles = "ADMIN")

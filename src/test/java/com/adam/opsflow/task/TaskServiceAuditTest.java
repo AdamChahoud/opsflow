@@ -24,8 +24,11 @@ class TaskServiceAuditTest {
     @Test
     void createsAuditLog_whenTaskIsCreated(){
         UUID userId = UUID.randomUUID();
-        taskService.createTask("Test task", "desc", userId);
-        var logs = auditLogRepository.findAll();
+        Task task = taskService.createTask("Test task", "desc", userId);
+        var logs = auditLogRepository.findByEntityIdAndAction(
+                task.getId(),
+                "TASK_CREATED"
+        );
 
         assertThat(logs).hasSize(1);
         assertThat(logs.get(0).getAction()).isEqualTo("TASK_CREATED");
@@ -39,7 +42,12 @@ class TaskServiceAuditTest {
 
         Task task = taskService.createTask("Task", "desc", adminId);
         taskService.assignTask(task.getId(), assigneeId, adminId, "ADMIN");
-        var logs = auditLogRepository.findAll();
-        assertThat(logs).anyMatch(log -> log.getAction().equals("TASK_ASSIGNED"));
+        var logs = auditLogRepository.findByEntityIdAndAction(
+                task.getId(),
+                "TASK_ASSIGNED"
+        );
+        assertThat(logs).hasSize(1);
+        assertThat(logs.get(0).getAction()).isEqualTo("TASK_ASSIGNED");
+        assertThat(logs.get(0).getPerformedBy()).isEqualTo(adminId);
     }
 }

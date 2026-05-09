@@ -53,4 +53,8 @@ public class AuditLog {
     public UUID getPerformedBy() {
         return performedBy;
     }
+
+    public UUID getEntityId() {
+        return entityId;
+    }
 }
