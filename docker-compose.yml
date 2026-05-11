@@ -24,12 +24,15 @@ services:
     container_name: opsflow-api
     depends_on:
       - db
+      - mongo
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/opsflow
       SPRING_DATASOURCE_USERNAME: opsflow
       SPRING_DATASOURCE_PASSWORD: opsflow
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/opsflow
+      APP_FRONTEND_URL: http://localhost:5173
 
 volumes:
   pgdata:
